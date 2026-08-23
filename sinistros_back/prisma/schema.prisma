@@ -9,6 +9,14 @@ datasource db {
 
 // =========== Cadastro Base  =========== //
 
+model Usuario {
+  id                  Int                 @id @default(autoincrement())
+  nome                String
+  email               String              @unique
+  senha               String              @db.VarChar(60)
+}
+
+
 model Cliente {
   id                  Int                 @id @default(autoincrement())
   nome                String    
