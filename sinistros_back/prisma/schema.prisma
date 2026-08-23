@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =========== Cadastro Base  =========== //
+
+model Cliente {
+  id                  Int                 @id @default(autoincrement())
+  nome                String    
+  docIdentificacao    String              @unique
+  email               String?
+  telefone            String?
+  veiculos            Veiculo[]
+}
+
+
+model Veiculo {
+  id                  Int                 @id @default(autoincrement())
+  placa               String              @unique
+  marca               String              
+  modelo              String?
+  ano                 Int
+  clienteId           Int
+  cliente             Cliente             @relation(fields: [clienteId], references: [id])
+  sinistros           Sinistro[]
+}
+
+
+model CiaSeguro {
+  id                  Int                 @id @default(autoincrement())
+  nome                String
+  telefone            String?
+  contatoResponsavel  String?
+  sinistros           Sinistro[]
+  corretoras          CorretoraCia[]
+}
+
+
+model Corretora {
+  id                  Int                 @id @default(autoincrement())
+  nome                String
+  corretorResponsavel String?
+  email               String?
+  sinistros           Sinistro[]
+  cias                CorretoraCia[]
+}
+
+
+model CorretoraCia {
+  corretoraId         Int
+  ciaId               Int 
+  corretora           Corretora            @relation(fields: [corretoraId], references: [id])
+  cia                 CiaSeguro            @relation(fields: [ciaId], references: [id])
+
+  @@id([corretoraId, ciaId])
+}
+
+
+// =========== Núcleo =========== //
+
+enum TipoAtendimento {
+  PARTICULAR
+  SEGURO
+}
+
+
+model Sinistro {
+  id                   Int                  @id @default(autoincrement())
+  veiculoId            Int
+  veiculo              Veiculo              @relation(fields: [veiculoId], references:[id])
+  tipoAtendimento      TipoAtendimento
+  ciaSeguroId          Int?
+  ciaSeguro            CiaSeguro?           @relation(fields: [ciaSeguroId], references:[id])
+  corretoraId          Int?
+  corretora            Corretora?           @relation(fields: [corretoraId], references:[id])
+  numApolice           String?
+  kmAtendimento        Int
+  dataAbertura         DateTime             @default(now())
+  dataEncerramento     DateTime?
+  statusAtual          String
+
+  historico            HistoricoSinistro[]
+  orcamento            Orcamento[]
+  foto                 Foto[]
+}
+
+
+// =========== Detalhes de Cada sinistro =========== //
+
+model HistoricoSinistro{
+  id                   Int                  @id @default(autoincrement())
+  sinistroId           Int
+  sinistro             Sinistro             @relation(fields: [sinistroId], references: [id])
+  status               String
+  dataHora             DateTime             @default(now())
+  observacao           String?
+}
+
+
+enum TipoOrcamento {
+  INICIAL
+  COMPLEMENTAR
+}
+
+
+model Orcamento {
+  id                    Int                 @id @default(autoincrement())
+  sinistroId            Int
+  sinistro              Sinistro            @relation(fields: [sinistroId], references: [id])
+  versao                Int?
+  tipo                  TipoOrcamento
+  valorTotal            Decimal
+  dataCriacao           DateTime            @default(now())
+  status                String
+  dataResposta          DateTime?
+ 
+  itens                 ItemOrcamento[]
+  foto                  Foto[]
+}
+
+
+model ItemOrcamento {
+  id                    Int                  @id @default(autoincrement())
+  orcamentoId           Int
+  orcamento             Orcamento            @relation(fields: [orcamentoId], references: [id])
+  descricao             String
+  valor                 Decimal
+  dataPedido            DateTime             @default(now())
+  dataPrevistaChegada   DateTime?
+  dataChegadaReal       DateTime?
+}
+
+
+model Foto {
+  id                    Int                  @id @default(autoincrement())
+  sinistroId            Int
+  sinistro              Sinistro             @relation(fields:[sinistroId], references: [id])
+  orcamentoId           Int?
+  orcamento             Orcamento?           @relation(fields: [orcamentoId], references: [id])
+  momento               String
+  caminhoArquivo        String
+  dataCaptura           DateTime             @default(now())
+}
