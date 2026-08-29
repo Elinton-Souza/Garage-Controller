@@ -5,7 +5,17 @@ info:
 
 http:
   method: POST
-  url: http://localhost:3000/veiculos
+  url: C
+  body:
+    type: json
+    data: |-
+      {
+        "placa":"def1a34",
+        "marca":"Ford",
+        "modelo":"Ka",
+        "ano": 2019,
+        "clienteId": 4
+      }
   auth: inherit
 
 settings:

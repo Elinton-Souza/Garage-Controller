@@ -4,7 +4,7 @@ info:
   seq: 4
 
 http:
-  method: GET
+  method: DELETE
   url: http://localhost:3000/veiculos/2
   auth: inherit
 

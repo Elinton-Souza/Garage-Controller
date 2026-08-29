@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhots:3000/veiculos
+  url: http://localhost:3000/veiculos
   auth: inherit
 
 settings:

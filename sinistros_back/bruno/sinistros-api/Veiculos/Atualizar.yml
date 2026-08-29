@@ -4,8 +4,18 @@ info:
   seq: 3
 
 http:
-  method: GET
+  method: PUT
   url: http://localhost:3000/veiculos/1
+  body:
+    type: json
+    data: |-
+      {
+        "placa":"zzz1b34",
+        "marca":"Ford",
+        "modelo":"Ka",
+        "ano": 2019,
+        "clienteId": 4
+      }
   auth: inherit
 
 settings:
