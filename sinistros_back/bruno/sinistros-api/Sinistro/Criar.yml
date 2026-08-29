@@ -11,7 +11,7 @@ http:
     data: |-
       {
         "veiculoId": 3,
-        "tipoAtendimento": "SEGURO",
+        "tipoAtendimento": "PARTICULAR",
         "ciaSeguroId": 1,
         "corretoraId": 1,
         "numApolice": "AP-2026-001",
