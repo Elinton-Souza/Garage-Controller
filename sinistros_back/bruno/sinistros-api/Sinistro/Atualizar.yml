@@ -1,0 +1,28 @@
+info:
+  name: Atualizar
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: http://localhost:3000/sinistro/1
+  body:
+    type: json
+    data: |-
+      {
+        "veiculoId": 1,
+        "tipoAtendimento": "SEGURO",
+        "ciaSeguroId": 1,
+        "corretoraId": 1,
+        "numApolice": "AP-2026-001",
+        "kmAtendimento": 12000,
+        "statusAtual": "vistoria com Perito"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

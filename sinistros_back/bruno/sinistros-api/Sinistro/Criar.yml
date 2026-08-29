@@ -1,0 +1,28 @@
+info:
+  name: Criar
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/sinistro
+  body:
+    type: json
+    data: |-
+      {
+        "veiculoId": 3,
+        "tipoAtendimento": "SEGURO",
+        "ciaSeguroId": 1,
+        "corretoraId": 1,
+        "numApolice": "AP-2026-001",
+        "kmAtendimento": 12000,
+        "statusAtual": "Aberto"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
