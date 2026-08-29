@@ -1,0 +1,24 @@
+info:
+  name: Atualizar
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: http://localhost:3000/clientes/1
+  body:
+    type: json
+    data: |-
+      {
+        "nome":"Elinton Souza",
+        "docIdentificacao":"01987654321",
+        "email":"elinton@teste.com",
+        "telefone":"53999999999"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
