@@ -1,0 +1,26 @@
+info:
+  name: Criar
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/veiculos
+  body:
+    type: json
+    data: |-
+      {
+        "placa":"aaa1y34",
+        "marca":"GWM",
+        "modelo":"Haval 6",
+        "ano": 2026,
+        "clienteId": 1
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
