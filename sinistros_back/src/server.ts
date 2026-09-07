@@ -9,6 +9,7 @@ import routesSinistro from './routes/sinistro'
 import routesHistoricoSinistro from './routes/historicoSinistro'
 import routesOrcamento from './routes/orcamento'
 import routesItemOrcamento from './routes/itemOrcamento'
+import routesFoto from './routes/foto'
 
 const app = express()
 const port = 3000
@@ -25,6 +26,7 @@ app.use("/sinistro", routesSinistro)
 app.use("/historico-sinistro", routesHistoricoSinistro)
 app.use("/orcamento", routesOrcamento)
 app.use("/item-orcamento", routesItemOrcamento)
+app.use("/foto", routesFoto)
 
 app.get('/', (req, res) => {
   res.send('Api: Garage Controller — Cadastro de Sinistros')
