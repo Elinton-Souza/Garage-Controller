@@ -141,6 +141,11 @@ model ItemOrcamento {
   dataPedido            DateTime             @default(now())
   dataPrevistaChegada   DateTime?
   dataChegadaReal       DateTime?
+
+  iaLocaisCompra        Json?
+  iaFaixaPreco          String?
+  iaDica                String?
+  iaConsultadoEm        DateTime?
 }
 
 
