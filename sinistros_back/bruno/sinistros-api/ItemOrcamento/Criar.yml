@@ -6,6 +6,14 @@ info:
 http:
   method: POST
   url: http://localhost:3000/item-orcamento
+  body:
+    type: json
+    data: |-
+      {
+        "orcamentoId": 1,
+        "descricao": "Farol dianteiro direito",
+        "valor": 850
+      }
   auth: inherit
 
 settings:
