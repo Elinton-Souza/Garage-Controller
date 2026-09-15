@@ -7,6 +7,7 @@ import Veiculos from './Veiculos'
 import CadCliente from './CadCliente'
 import CadVeiculo from './CadVeiculo'
 import CadSinistro from './CadSinistro'
+import Dashboard from './Dashboard'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/veiculos" element={<Veiculos />} />
         <Route path="/veiculos/novo" element={<CadVeiculo />} />
         <Route path="/sinistros/novo" element={<CadSinistro />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Route>
     </Routes>
   )

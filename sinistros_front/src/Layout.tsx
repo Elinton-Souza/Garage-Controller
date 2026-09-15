@@ -11,6 +11,7 @@ function Layout() {
           <Link to="/sinistros" className="hover:underline">Sinistros</Link>
           <Link to="/clientes" className="hover:underline">Clientes</Link>
           <Link to="/veiculos" className="hover:underline">Veículos</Link>
+          <Link to="/dashboard" className="hover:underline">Dashboard</Link>
         </nav>
         <span>{usuario.nome}</span>
       </header>
