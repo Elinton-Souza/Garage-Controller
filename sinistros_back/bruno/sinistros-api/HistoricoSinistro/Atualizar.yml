@@ -1,0 +1,18 @@
+info:
+  name: Atualizar
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: |2-
+     
+    http://localhost:3000/historico-sinistro/1
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

@@ -1,0 +1,24 @@
+info:
+  name: Criar
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/historico-sinistro
+  body:
+    type: json
+    data: |-
+      {
+        "sinistroId": 1,
+        "status": "Em análise",
+        "observacao": "Primeira vistoria realizada"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

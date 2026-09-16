@@ -1,0 +1,7 @@
+info:
+  name: CorretoraCia
+  type: folder
+  seq: 5
+
+request:
+  auth: inherit

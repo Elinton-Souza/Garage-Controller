@@ -1,0 +1,24 @@
+info:
+  name: Criar
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/corretora
+  body:
+    type: json
+    data: |-
+      {
+        "nome":"Elinton Seguros BR",
+        "corretorResponsavel":"Elinton Souza",
+        "email":"elinton@segurosbr.com"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

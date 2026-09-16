@@ -1,0 +1,24 @@
+info:
+  name: Criar
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/cia-seguro
+  body:
+    type: json
+    data: |-
+      {
+        "nome":"Yelum",
+        "telefone":"0800 333 4444",
+        "contatoResponsavel":"Gladmir Senaco"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

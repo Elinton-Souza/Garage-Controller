@@ -9,6 +9,14 @@ datasource db {
 
 // =========== Cadastro Base  =========== //
 
+model Usuario {
+  id                  Int                 @id @default(autoincrement())
+  nome                String
+  email               String              @unique
+  senha               String              @db.VarChar(60)
+}
+
+
 model Cliente {
   id                  Int                 @id @default(autoincrement())
   nome                String    
@@ -133,6 +141,11 @@ model ItemOrcamento {
   dataPedido            DateTime             @default(now())
   dataPrevistaChegada   DateTime?
   dataChegadaReal       DateTime?
+
+  iaLocaisCompra        Json?
+  iaFaixaPreco          String?
+  iaDica                String?
+  iaConsultadoEm        DateTime?
 }
 
 
