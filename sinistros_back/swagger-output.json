@@ -1,0 +1,1585 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Cadastro de Sinistros",
+    "description": "Documentação da API de cadastro de sinistros",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/clientes/": {
+      "get": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Lista todos os clientes",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Cadastra um cliente",
+        "description": "Realiza o cadastro de um novo cliente.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "example": "Elinton Souza"
+                },
+                "docIdentificacao": {
+                  "type": "string",
+                  "example": "12345678900"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "elinton@email.com"
+                },
+                "telefone": {
+                  "type": "string",
+                  "example": "12345678900"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Cliente cadastrado com sucesso."
+          },
+          "400": {
+            "description": "Dados Inválidos"
+          }
+        }
+      }
+    },
+    "/clientes/{id}": {
+      "delete": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Remove um cliente",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do cliente a ser removido"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Clientes"
+        ],
+        "summary": "Atualiza um cliente",
+        "description": "Atualiza os dados de um novo cliente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do cliente a ser atualizado"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "example": "Elinton Souza"
+                },
+                "docIdentificacao": {
+                  "type": "string",
+                  "example": "12345678900"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "elinton@email.com"
+                },
+                "telefone": {
+                  "type": "string",
+                  "example": "12345678900"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente atualizado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/veiculos/": {
+      "get": {
+        "tags": [
+          "Veículos"
+        ],
+        "summary": "Lista todos os veículos",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Veículos"
+        ],
+        "summary": "Cadastra um veículo",
+        "description": "Realiza o cadastro de um novo veículo.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "placa": {
+                  "type": "string",
+                  "example": "ABC1D34"
+                },
+                "marca": {
+                  "type": "string",
+                  "example": "Fiat"
+                },
+                "modelo": {
+                  "type": "string",
+                  "example": "Uno"
+                },
+                "ano": {
+                  "type": "number",
+                  "example": 2020
+                },
+                "clienteId": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Veículo cadastrado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/veiculos/{id}": {
+      "delete": {
+        "tags": [
+          "Veículos"
+        ],
+        "summary": "Remove um veículo",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do veículo a ser removido"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Veículos"
+        ],
+        "summary": "Atualiza um veículo",
+        "description": "Atualiza os dados de um veículo existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do veículo a ser atualizado"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "placa": {
+                  "type": "string",
+                  "example": "ABC1D34"
+                },
+                "marca": {
+                  "type": "string",
+                  "example": "Fiat"
+                },
+                "modelo": {
+                  "type": "string",
+                  "example": "Uno"
+                },
+                "ano": {
+                  "type": "number",
+                  "example": 2020
+                },
+                "clienteId": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Veículo atualizado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/cia-seguro/": {
+      "get": {
+        "tags": [
+          "Cias de Seguro"
+        ],
+        "summary": "Lista todas as cias de seguro",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Cias de Seguro"
+        ],
+        "summary": "Cadastra uma cia de seguro",
+        "description": "Realiza o cadastro de uma nova cia de seguro.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "example": "Porto Seguro"
+                },
+                "telefone": {
+                  "type": "string",
+                  "example": "5133334444"
+                },
+                "contatoResponsavel": {
+                  "type": "string",
+                  "example": "João"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Cia de seguro cadastrada com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/cia-seguro/{id}": {
+      "delete": {
+        "tags": [
+          "Cias de Seguro"
+        ],
+        "summary": "Remove uma cia de seguro",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da cia de seguro a ser removida"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Cias de Seguro"
+        ],
+        "summary": "Atualiza uma cia de seguro",
+        "description": "Atualiza os dados de uma cia de seguro existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da cia de seguro a ser atualizada"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "example": "Porto Seguro"
+                },
+                "telefone": {
+                  "type": "string",
+                  "example": "5133334444"
+                },
+                "contatoResponsavel": {
+                  "type": "string",
+                  "example": "João"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cia de seguro atualizada com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/corretora/": {
+      "get": {
+        "tags": [
+          "Corretoras"
+        ],
+        "summary": "Lista todas as corretoras",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Corretoras"
+        ],
+        "summary": "Cadastra uma corretora",
+        "description": "Realiza o cadastro de uma nova corretora.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "example": "Corretora ABC"
+                },
+                "corretorResponsavel": {
+                  "type": "string",
+                  "example": "Maria"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "contato@corretora.com"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Corretora cadastrada com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/corretora/{id}": {
+      "delete": {
+        "tags": [
+          "Corretoras"
+        ],
+        "summary": "Remove uma corretora",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da corretora a ser removida"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Corretoras"
+        ],
+        "summary": "Atualiza uma corretora",
+        "description": "Atualiza os dados de uma corretora existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da corretora a ser atualizada"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "example": "Corretora ABC"
+                },
+                "corretorResponsavel": {
+                  "type": "string",
+                  "example": "Maria"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "contato@corretora.com"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Corretora atualizada com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/corretora-cia/": {
+      "get": {
+        "tags": [
+          "Corretora x Cia"
+        ],
+        "summary": "Lista os vínculos entre corretoras e cias de seguro",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Corretora x Cia"
+        ],
+        "summary": "Cria um vínculo entre corretora e cia de seguro",
+        "description": "Vincula uma corretora a uma cia de seguro.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "corretoraId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "ciaId": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Vínculo criado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/corretora-cia/{corretoraId}/{ciaId}": {
+      "delete": {
+        "tags": [
+          "Corretora x Cia"
+        ],
+        "summary": "Remove um vínculo entre corretora e cia de seguro",
+        "description": "",
+        "parameters": [
+          {
+            "name": "corretoraId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da corretora"
+          },
+          {
+            "name": "ciaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da cia de seguro"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/sinistro/": {
+      "get": {
+        "tags": [
+          "Sinistros"
+        ],
+        "summary": "Lista todos os sinistros",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Sinistros"
+        ],
+        "summary": "Cadastra um sinistro",
+        "description": "Realiza o cadastro de um novo sinistro. Se o tipo de atendimento for SEGURO, é obrigatório informar a cia de seguro e a corretora.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "veiculoId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "tipoAtendimento": {
+                  "type": "string",
+                  "example": "SEGURO"
+                },
+                "ciaSeguroId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "corretoraId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "numApolice": {
+                  "type": "string",
+                  "example": "123456"
+                },
+                "kmAtendimento": {
+                  "type": "number",
+                  "example": 15000
+                },
+                "statusAtual": {
+                  "type": "string",
+                  "example": "Em andamento"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Sinistro cadastrado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/sinistro/{id}": {
+      "delete": {
+        "tags": [
+          "Sinistros"
+        ],
+        "summary": "Remove um sinistro",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do sinistro a ser removido"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Sinistros"
+        ],
+        "summary": "Atualiza um sinistro",
+        "description": "Atualiza os dados de um sinistro existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do sinistro a ser atualizado"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "veiculoId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "tipoAtendimento": {
+                  "type": "string",
+                  "example": "SEGURO"
+                },
+                "ciaSeguroId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "corretoraId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "numApolice": {
+                  "type": "string",
+                  "example": "123456"
+                },
+                "kmAtendimento": {
+                  "type": "number",
+                  "example": 15000
+                },
+                "statusAtual": {
+                  "type": "string",
+                  "example": "Em andamento"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sinistro atualizado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/historico-sinistro/": {
+      "get": {
+        "tags": [
+          "Histórico de Sinistros"
+        ],
+        "summary": "Lista todos os históricos de sinistro",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Histórico de Sinistros"
+        ],
+        "summary": "Cadastra um histórico de sinistro",
+        "description": "Registra uma nova entrada no histórico de um sinistro.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sinistroId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "status": {
+                  "type": "string",
+                  "example": "Em andamento"
+                },
+                "observacao": {
+                  "type": "string",
+                  "example": "Veículo em análise"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Histórico cadastrado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/historico-sinistro/{id}": {
+      "put": {
+        "tags": [
+          "Histórico de Sinistros"
+        ],
+        "summary": "Atualiza um histórico de sinistro",
+        "description": "Atualiza os dados de um histórico de sinistro existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do histórico a ser atualizado"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sinistroId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "status": {
+                  "type": "string",
+                  "example": "Em andamento"
+                },
+                "observacao": {
+                  "type": "string",
+                  "example": "Veículo em análise"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Histórico atualizado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Histórico de Sinistros"
+        ],
+        "summary": "Remove um histórico de sinistro",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do histórico a ser removido"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/orcamento/": {
+      "get": {
+        "tags": [
+          "Orçamentos"
+        ],
+        "summary": "Lista todos os orçamentos",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Orçamentos"
+        ],
+        "summary": "Cadastra um orçamento",
+        "description": "Realiza o cadastro de um novo orçamento.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sinistroId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "versao": {
+                  "type": "number",
+                  "example": 1
+                },
+                "tipo": {
+                  "type": "string",
+                  "example": "INICIAL"
+                },
+                "valorTotal": {
+                  "type": "number",
+                  "example": 1500.5
+                },
+                "status": {
+                  "type": "string",
+                  "example": "Pendente"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Orçamento cadastrado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/orcamento/{id}": {
+      "put": {
+        "tags": [
+          "Orçamentos"
+        ],
+        "summary": "Atualiza um orçamento",
+        "description": "Atualiza os dados de um orçamento existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do orçamento a ser atualizado"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sinistroId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "versao": {
+                  "type": "number",
+                  "example": 1
+                },
+                "tipo": {
+                  "type": "string",
+                  "example": "INICIAL"
+                },
+                "valorTotal": {
+                  "type": "number",
+                  "example": 1500.5
+                },
+                "status": {
+                  "type": "string",
+                  "example": "Pendente"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orçamento atualizado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Orçamentos"
+        ],
+        "summary": "Remove um orçamento",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do orçamento a ser removido"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/item-orcamento/": {
+      "get": {
+        "tags": [
+          "Itens de Orçamento"
+        ],
+        "summary": "Lista todos os itens de orçamento",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Itens de Orçamento"
+        ],
+        "summary": "Cadastra um item de orçamento",
+        "description": "Cadastra um item de orçamento. Automaticamente consulta a IA para sugerir locais de compra, faixa de preço e dicas sobre a peça informada.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "orcamentoId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "descricao": {
+                  "type": "string",
+                  "example": "Para-choque dianteiro"
+                },
+                "valor": {
+                  "type": "number",
+                  "example": 350
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Item de orçamento cadastrado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/item-orcamento/{id}": {
+      "put": {
+        "tags": [
+          "Itens de Orçamento"
+        ],
+        "summary": "Atualiza um item de orçamento",
+        "description": "Atualiza os dados de um item de orçamento existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do item de orçamento a ser atualizado"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "orcamentoId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "descricao": {
+                  "type": "string",
+                  "example": "Para-choque dianteiro"
+                },
+                "valor": {
+                  "type": "number",
+                  "example": 350
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item de orçamento atualizado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Itens de Orçamento"
+        ],
+        "summary": "Remove um item de orçamento",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do item de orçamento a ser removido"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/foto/": {
+      "get": {
+        "tags": [
+          "Fotos"
+        ],
+        "summary": "Lista todas as fotos",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Fotos"
+        ],
+        "summary": "Cadastra uma foto",
+        "description": "Registra uma nova foto vinculada a um sinistro (e, opcionalmente, a um orçamento).",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sinistroId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "orcamentoId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "momento": {
+                  "type": "string",
+                  "example": "antes"
+                },
+                "caminhoArquivo": {
+                  "type": "string",
+                  "example": "/uploads/foto1.jpg"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Foto cadastrada com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      }
+    },
+    "/foto/{id}": {
+      "put": {
+        "tags": [
+          "Fotos"
+        ],
+        "summary": "Atualiza uma foto",
+        "description": "Atualiza os dados de uma foto existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da foto a ser atualizada"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sinistroId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "orcamentoId": {
+                  "type": "number",
+                  "example": 1
+                },
+                "momento": {
+                  "type": "string",
+                  "example": "antes"
+                },
+                "caminhoArquivo": {
+                  "type": "string",
+                  "example": "/uploads/foto1.jpg"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Foto atualizada com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Fotos"
+        ],
+        "summary": "Remove uma foto",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID da foto a ser removida"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/usuarios/": {
+      "get": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Lista todos os usuários",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Cadastra um usuário",
+        "description": "Cadastra um novo usuário. A senha deve ter no mínimo 8 caracteres, com letra maiúscula, minúscula, número e símbolo.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "example": "Elinton Souza"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "elinton@email.com"
+                },
+                "senha": {
+                  "type": "string",
+                  "example": "Senha@123"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Usuário cadastrado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos ou e-mail já cadastrado."
+          }
+        }
+      }
+    },
+    "/usuarios/{id}": {
+      "put": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Atualiza um usuário",
+        "description": "Atualiza os dados de um usuário existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do usuário a ser atualizado"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "example": "Elinton Souza"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "elinton@email.com"
+                },
+                "senha": {
+                  "type": "string",
+                  "example": "Senha@123"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Usuários"
+        ],
+        "summary": "Remove um usuário",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "ID do usuário a ser removido"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/login/": {
+      "post": {
+        "tags": [
+          "Login"
+        ],
+        "summary": "Autentica um usuário",
+        "description": "Realiza o login e retorna um token JWT válido por 1 hora.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "usuario@email.com"
+                },
+                "senha": {
+                  "type": "string",
+                  "example": "123456"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso, retorna o token."
+          },
+          "400": {
+            "description": "Login ou senha incorretos."
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "example": "any"
+                  },
+                  "senha": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard/resumo": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Retorna o resumo de dados para o dashboard",
+        "description": "Retorna sinistros por status, sinistros por tipo de atendimento, veículos por marca e o valor total de orçamentos por mês.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  }
+}

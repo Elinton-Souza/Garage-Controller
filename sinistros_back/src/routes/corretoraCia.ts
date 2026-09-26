@@ -10,6 +10,10 @@ const corretoraCiaSchema = z.object({
 })
 
 router.get("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Corretora x Cia"];
+  #swagger.summary = "Lista os vínculos entre corretoras e cias de seguro";
+  */
   try {
     const vinculos = await prisma.corretoraCia.findMany({
       include: { corretora: true, cia: true }
@@ -21,6 +25,25 @@ router.get("/", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Corretora x Cia"];
+  #swagger.summary = "Cria um vínculo entre corretora e cia de seguro";
+  #swagger.description = "Vincula uma corretora a uma cia de seguro.";
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      corretoraId: 1,
+      ciaId: 1
+    }
+  };
+  #swagger.responses[201] = {
+    description: "Vínculo criado com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const valida = corretoraCiaSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
@@ -40,6 +63,22 @@ router.post("/", async (req, res) => {
 })
 
 router.delete("/:corretoraId/:ciaId", async (req, res) => {
+  /*
+  #swagger.tags = ["Corretora x Cia"];
+  #swagger.summary = "Remove um vínculo entre corretora e cia de seguro";
+  #swagger.parameters['corretoraId'] = {
+    in: 'path',
+    required: true,
+    description: 'ID da corretora',
+    schema: { type: 'integer' }
+  };
+  #swagger.parameters['ciaId'] = {
+    in: 'path',
+    required: true,
+    description: 'ID da cia de seguro',
+    schema: { type: 'integer' }
+  };
+  */
   const { corretoraId, ciaId } = req.params
   try {
     const vinculo = await prisma.corretoraCia.delete({

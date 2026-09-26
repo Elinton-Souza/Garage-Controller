@@ -11,6 +11,10 @@ const historicoSchema = z.object({
 })
 
 router.get("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Histórico de Sinistros"];
+  #swagger.summary = "Lista todos os históricos de sinistro";
+  */
   try {
     const historicos = await prisma.historicoSinistro.findMany({
       include: { sinistro: true }
@@ -22,6 +26,26 @@ router.get("/", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Histórico de Sinistros"];
+  #swagger.summary = "Cadastra um histórico de sinistro";
+  #swagger.description = "Registra uma nova entrada no histórico de um sinistro.";
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      sinistroId: 1,
+      status: 'Em andamento',
+      observacao: 'Veículo em análise'
+    }
+  };
+  #swagger.responses[201] = {
+    description: "Histórico cadastrado com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const valida = historicoSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
@@ -42,6 +66,32 @@ router.post("/", async (req, res) => {
 })
 
 router.put("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Histórico de Sinistros"];
+  #swagger.summary = "Atualiza um histórico de sinistro";
+  #swagger.description = "Atualiza os dados de um histórico de sinistro existente.";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID do histórico a ser atualizado',
+    schema: { type: 'integer' }
+  };
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      sinistroId: 1,
+      status: 'Em andamento',
+      observacao: 'Veículo em análise'
+    }
+  };
+  #swagger.responses[200] = {
+    description: "Histórico atualizado com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const { id } = req.params
 
   const valida = historicoSchema.safeParse(req.body)
@@ -65,6 +115,16 @@ router.put("/:id", async (req, res) => {
 })
 
 router.delete("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Histórico de Sinistros"];
+  #swagger.summary = "Remove um histórico de sinistro";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID do histórico a ser removido',
+    schema: { type: 'integer' }
+  };
+  */
   const { id } = req.params
   try {
     const historico = await prisma.historicoSinistro.delete({ where: { id: Number(id) } })

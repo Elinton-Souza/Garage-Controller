@@ -4,6 +4,11 @@ import { Router } from 'express'
 const router = Router()
 
 router.get("/resumo", async (req, res) => {
+  /*
+  #swagger.tags = ["Dashboard"];
+  #swagger.summary = "Retorna o resumo de dados para o dashboard";
+  #swagger.description = "Retorna sinistros por status, sinistros por tipo de atendimento, veículos por marca e o valor total de orçamentos por mês.";
+  */
   try {
     const sinistrosPorStatus = await prisma.sinistro.groupBy({
       by: ["statusAtual"],
