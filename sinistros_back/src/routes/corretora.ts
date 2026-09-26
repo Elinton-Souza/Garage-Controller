@@ -11,6 +11,10 @@ const corretoraSchema = z.object({
 })
 
 router.get("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Corretoras"];
+  #swagger.summary = "Lista todas as corretoras";
+  */
   try {
     const corretoras = await prisma.corretora.findMany()
     res.status(200).json(corretoras)
@@ -20,6 +24,26 @@ router.get("/", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Corretoras"];
+  #swagger.summary = "Cadastra uma corretora";
+  #swagger.description = "Realiza o cadastro de uma nova corretora.";
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      nome: 'Corretora ABC',
+      corretorResponsavel: 'Maria',
+      email: 'contato@corretora.com'
+    }
+  };
+  #swagger.responses[201] = {
+    description: "Corretora cadastrada com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const valida = corretoraSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
@@ -39,6 +63,16 @@ router.post("/", async (req, res) => {
 })
 
 router.delete("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Corretoras"];
+  #swagger.summary = "Remove uma corretora";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID da corretora a ser removida',
+    schema: { type: 'integer' }
+  };
+  */
   const { id } = req.params
   try {
     const corretora = await prisma.corretora.delete({ where: { id: Number(id) } })
@@ -49,6 +83,32 @@ router.delete("/:id", async (req, res) => {
 })
 
 router.put("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Corretoras"];
+  #swagger.summary = "Atualiza uma corretora";
+  #swagger.description = "Atualiza os dados de uma corretora existente.";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID da corretora a ser atualizada',
+    schema: { type: 'integer' }
+  };
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      nome: 'Corretora ABC',
+      corretorResponsavel: 'Maria',
+      email: 'contato@corretora.com'
+    }
+  };
+  #swagger.responses[200] = {
+    description: "Corretora atualizada com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const { id } = req.params
 
   const valida = corretoraSchema.safeParse(req.body)

@@ -12,6 +12,10 @@ const fotoSchema = z.object({
 })
 
 router.get("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Fotos"];
+  #swagger.summary = "Lista todas as fotos";
+  */
   try {
     const fotos = await prisma.foto.findMany({
       include: { sinistro: true, orcamento: true }
@@ -23,6 +27,27 @@ router.get("/", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Fotos"];
+  #swagger.summary = "Cadastra uma foto";
+  #swagger.description = "Registra uma nova foto vinculada a um sinistro (e, opcionalmente, a um orçamento).";
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      sinistroId: 1,
+      orcamentoId: 1,
+      momento: 'antes',
+      caminhoArquivo: '/uploads/foto1.jpg'
+    }
+  };
+  #swagger.responses[201] = {
+    description: "Foto cadastrada com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const valida = fotoSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
@@ -43,6 +68,33 @@ router.post("/", async (req, res) => {
 })
 
 router.put("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Fotos"];
+  #swagger.summary = "Atualiza uma foto";
+  #swagger.description = "Atualiza os dados de uma foto existente.";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID da foto a ser atualizada',
+    schema: { type: 'integer' }
+  };
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      sinistroId: 1,
+      orcamentoId: 1,
+      momento: 'antes',
+      caminhoArquivo: '/uploads/foto1.jpg'
+    }
+  };
+  #swagger.responses[200] = {
+    description: "Foto atualizada com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const { id } = req.params
 
   const valida = fotoSchema.safeParse(req.body)
@@ -66,6 +118,16 @@ router.put("/:id", async (req, res) => {
 })
 
 router.delete("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Fotos"];
+  #swagger.summary = "Remove uma foto";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID da foto a ser removida',
+    schema: { type: 'integer' }
+  };
+  */
   const { id } = req.params
   try {
     const foto = await prisma.foto.delete({ where: { id: Number(id) } })

@@ -44,6 +44,10 @@ function validaSenha(senha: string) {
 }
 
 router.get("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Usuários"];
+  #swagger.summary = "Lista todos os usuários";
+  */
   try {
     const usuarios = await prisma.usuario.findMany({
       select: { id: true, nome: true, email: true }
@@ -55,6 +59,26 @@ router.get("/", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Usuários"];
+  #swagger.summary = "Cadastra um usuário";
+  #swagger.description = "Cadastra um novo usuário. A senha deve ter no mínimo 8 caracteres, com letra maiúscula, minúscula, número e símbolo.";
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      nome: 'Elinton Souza',
+      email: 'elinton@email.com',
+      senha: 'Senha@123'
+    }
+  };
+  #swagger.responses[201] = {
+    description: "Usuário cadastrado com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos ou e-mail já cadastrado."
+  };
+  */
   const valida = usuarioSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
@@ -91,6 +115,32 @@ router.post("/", async (req, res) => {
 })
 
 router.put("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Usuários"];
+  #swagger.summary = "Atualiza um usuário";
+  #swagger.description = "Atualiza os dados de um usuário existente.";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID do usuário a ser atualizado',
+    schema: { type: 'integer' }
+  };
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      nome: 'Elinton Souza',
+      email: 'elinton@email.com',
+      senha: 'Senha@123'
+    }
+  };
+  #swagger.responses[200] = {
+    description: "Usuário atualizado com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const { id } = req.params
 
   const valida = usuarioSchema.safeParse(req.body)
@@ -124,6 +174,16 @@ router.put("/:id", async (req, res) => {
 })
 
 router.delete("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Usuários"];
+  #swagger.summary = "Remove um usuário";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID do usuário a ser removido',
+    schema: { type: 'integer' }
+  };
+  */
   const { id } = req.params
   try {
     const usuario = await prisma.usuario.delete({

@@ -11,6 +11,10 @@ const ciaSeguroSchema = z.object({
 })
 
 router.get("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Cias de Seguro"];
+  #swagger.summary = "Lista todas as cias de seguro";
+  */
   try {
     const cias = await prisma.ciaSeguro.findMany()
     res.status(200).json(cias)
@@ -20,6 +24,26 @@ router.get("/", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Cias de Seguro"];
+  #swagger.summary = "Cadastra uma cia de seguro";
+  #swagger.description = "Realiza o cadastro de uma nova cia de seguro.";
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      nome: 'Porto Seguro',
+      telefone: '5133334444',
+      contatoResponsavel: 'João'
+    }
+  };
+  #swagger.responses[201] = {
+    description: "Cia de seguro cadastrada com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const valida = ciaSeguroSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
@@ -39,6 +63,16 @@ router.post("/", async (req, res) => {
 })
 
 router.delete("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Cias de Seguro"];
+  #swagger.summary = "Remove uma cia de seguro";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID da cia de seguro a ser removida',
+    schema: { type: 'integer' }
+  };
+  */
   const { id } = req.params
   try {
     const cia = await prisma.ciaSeguro.delete({ where: { id: Number(id) } })
@@ -49,6 +83,32 @@ router.delete("/:id", async (req, res) => {
 })
 
 router.put("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Cias de Seguro"];
+  #swagger.summary = "Atualiza uma cia de seguro";
+  #swagger.description = "Atualiza os dados de uma cia de seguro existente.";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID da cia de seguro a ser atualizada',
+    schema: { type: 'integer' }
+  };
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      nome: 'Porto Seguro',
+      telefone: '5133334444',
+      contatoResponsavel: 'João'
+    }
+  };
+  #swagger.responses[200] = {
+    description: "Cia de seguro atualizada com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const { id } = req.params
 
   const valida = ciaSeguroSchema.safeParse(req.body)
