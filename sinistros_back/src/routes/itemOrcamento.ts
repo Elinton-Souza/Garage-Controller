@@ -12,6 +12,10 @@ const itemSchema = z.object({
 });
 
 router.get("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Itens de Orçamento"];
+  #swagger.summary = "Lista todos os itens de orçamento";
+  */
   try {
     const itens = await prisma.itemOrcamento.findMany({
       include: { orcamento: true },
@@ -23,6 +27,26 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Itens de Orçamento"];
+  #swagger.summary = "Cadastra um item de orçamento";
+  #swagger.description = "Cadastra um item de orçamento. Automaticamente consulta a IA para sugerir locais de compra, faixa de preço e dicas sobre a peça informada.";
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      orcamentoId: 1,
+      descricao: 'Para-choque dianteiro',
+      valor: 350.00
+    }
+  };
+  #swagger.responses[201] = {
+    description: "Item de orçamento cadastrado com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const valida = itemSchema.safeParse(req.body);
   if (!valida.success) {
     res.status(400).json({ erro: valida.error });
@@ -74,6 +98,32 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Itens de Orçamento"];
+  #swagger.summary = "Atualiza um item de orçamento";
+  #swagger.description = "Atualiza os dados de um item de orçamento existente.";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID do item de orçamento a ser atualizado',
+    schema: { type: 'integer' }
+  };
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      orcamentoId: 1,
+      descricao: 'Para-choque dianteiro',
+      valor: 350.00
+    }
+  };
+  #swagger.responses[200] = {
+    description: "Item de orçamento atualizado com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const { id } = req.params;
 
   const valida = itemSchema.safeParse(req.body);
@@ -97,6 +147,16 @@ router.put("/:id", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Itens de Orçamento"];
+  #swagger.summary = "Remove um item de orçamento";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID do item de orçamento a ser removido',
+    schema: { type: 'integer' }
+  };
+  */
   const { id } = req.params;
   try {
     const item = await prisma.itemOrcamento.delete({

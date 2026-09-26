@@ -6,6 +6,25 @@ import jwt from 'jsonwebtoken'
 const router = Router()
 
 router.post("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Login"];
+  #swagger.summary = "Autentica um usuário";
+  #swagger.description = "Realiza o login e retorna um token JWT válido por 1 hora.";
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      email: 'usuario@email.com',
+      senha: '123456'
+    }
+  };
+  #swagger.responses[200] = {
+    description: "Login realizado com sucesso, retorna o token."
+  };
+  #swagger.responses[400] = {
+    description: "Login ou senha incorretos."
+  };
+  */
   const { email, senha } = req.body
 
   const mensagemPadrao = "Login ou senha incorretos"

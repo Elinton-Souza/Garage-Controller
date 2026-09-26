@@ -13,6 +13,10 @@ const orcamentoSchema = z.object({
 })
 
 router.get("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Orçamentos"];
+  #swagger.summary = "Lista todos os orçamentos";
+  */
   try {
     const orcamentos = await prisma.orcamento.findMany({
       include: { sinistro: true, itens: true }
@@ -24,6 +28,28 @@ router.get("/", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Orçamentos"];
+  #swagger.summary = "Cadastra um orçamento";
+  #swagger.description = "Realiza o cadastro de um novo orçamento.";
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      sinistroId: 1,
+      versao: 1,
+      tipo: 'INICIAL',
+      valorTotal: 1500.50,
+      status: 'Pendente'
+    }
+  };
+  #swagger.responses[201] = {
+    description: "Orçamento cadastrado com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const valida = orcamentoSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
@@ -44,6 +70,34 @@ router.post("/", async (req, res) => {
 })
 
 router.put("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Orçamentos"];
+  #swagger.summary = "Atualiza um orçamento";
+  #swagger.description = "Atualiza os dados de um orçamento existente.";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID do orçamento a ser atualizado',
+    schema: { type: 'integer' }
+  };
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      sinistroId: 1,
+      versao: 1,
+      tipo: 'INICIAL',
+      valorTotal: 1500.50,
+      status: 'Pendente'
+    }
+  };
+  #swagger.responses[200] = {
+    description: "Orçamento atualizado com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const { id } = req.params
 
   const valida = orcamentoSchema.safeParse(req.body)
@@ -67,6 +121,16 @@ router.put("/:id", async (req, res) => {
 })
 
 router.delete("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Orçamentos"];
+  #swagger.summary = "Remove um orçamento";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID do orçamento a ser removido',
+    schema: { type: 'integer' }
+  };
+  */
   const { id } = req.params
   try {
     const orcamento = await prisma.orcamento.delete({ where: { id: Number(id) } })

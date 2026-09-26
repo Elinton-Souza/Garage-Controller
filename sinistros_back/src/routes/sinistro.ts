@@ -23,6 +23,10 @@ const sinistroSchema = z.object({
 })
 
 router.get("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Sinistros"];
+  #swagger.summary = "Lista todos os sinistros";
+  */
   try {
     const sinistros = await prisma.sinistro.findMany({
       include: { veiculo: true, ciaSeguro: true, corretora: true }
@@ -34,6 +38,30 @@ router.get("/", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+  /*
+  #swagger.tags = ["Sinistros"];
+  #swagger.summary = "Cadastra um sinistro";
+  #swagger.description = "Realiza o cadastro de um novo sinistro. Se o tipo de atendimento for SEGURO, é obrigatório informar a cia de seguro e a corretora.";
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      veiculoId: 1,
+      tipoAtendimento: 'SEGURO',
+      ciaSeguroId: 1,
+      corretoraId: 1,
+      numApolice: '123456',
+      kmAtendimento: 15000,
+      statusAtual: 'Em andamento'
+    }
+  };
+  #swagger.responses[201] = {
+    description: "Sinistro cadastrado com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const valida = sinistroSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
@@ -53,6 +81,16 @@ router.post("/", async (req, res) => {
 })
 
 router.delete("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Sinistros"];
+  #swagger.summary = "Remove um sinistro";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID do sinistro a ser removido',
+    schema: { type: 'integer' }
+  };
+  */
   const { id } = req.params
   try {
     const sinistro = await prisma.sinistro.delete({ where: { id: Number(id) } })
@@ -63,6 +101,36 @@ router.delete("/:id", async (req, res) => {
 })
 
 router.put("/:id", async (req, res) => {
+  /*
+  #swagger.tags = ["Sinistros"];
+  #swagger.summary = "Atualiza um sinistro";
+  #swagger.description = "Atualiza os dados de um sinistro existente.";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID do sinistro a ser atualizado',
+    schema: { type: 'integer' }
+  };
+  #swagger.parameters['body'] = {
+    in: 'body',
+    required: true,
+    schema: {
+      veiculoId: 1,
+      tipoAtendimento: 'SEGURO',
+      ciaSeguroId: 1,
+      corretoraId: 1,
+      numApolice: '123456',
+      kmAtendimento: 15000,
+      statusAtual: 'Em andamento'
+    }
+  };
+  #swagger.responses[200] = {
+    description: "Sinistro atualizado com sucesso."
+  };
+  #swagger.responses[400] = {
+    description: "Dados inválidos."
+  };
+  */
   const { id } = req.params
 
   const valida = sinistroSchema.safeParse(req.body)
