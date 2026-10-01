@@ -1,26 +1,49 @@
 import { prisma } from "../../lib/prisma"
+import { requireRole } from "../middlewares/auth"
 import { Router } from 'express'
 import { z } from 'zod'
 
 const router = Router()
 
-const sinistroSchema = z.object({
+const statusSinistroValues = [
+  "INICIAL",
+  "AGUARDANDO_AUTORIZACAO",
+  "AUTORIZADO_COMPRA_PECAS",
+  "EM_SERVICO",
+  "FINALIZADO",
+  "ENTREGUE",
+] as const
+
+const sinistroCampos = z.object({
   veiculoId: z.number().int({ message: "Informe o veículo" }),
   tipoAtendimento: z.enum(["PARTICULAR", "SEGURO"], { message: "Informe o tipo de atendimento" }),
   ciaSeguroId: z.number().int().optional(),
   corretoraId: z.number().int().optional(),
   numApolice: z.string().optional(),
   kmAtendimento: z.number().int({ message: "Informe o km no momento do atendimento" }),
-  statusAtual: z.string().min(2, { message: "Informe o status atual" }),
-}).refine((data) => {
-  if (data.tipoAtendimento === "SEGURO") {
-    return data.ciaSeguroId !== undefined && data.corretoraId !== undefined
-  }
-  return true
-}, {
-  message: "Sinistro via seguro precisa informar a cia de seguro e a corretora",
-  path: ["ciaSeguroId"]
 })
+
+function exigeSeguroCompleto<T extends typeof sinistroCampos>(schema: T) {
+  return schema.refine((data) => {
+    if (data.tipoAtendimento === "SEGURO") {
+      return data.ciaSeguroId !== undefined && data.corretoraId !== undefined
+    }
+    return true
+  }, {
+    message: "Sinistro via seguro precisa informar a cia de seguro e a corretora",
+    path: ["ciaSeguroId"]
+  })
+}
+
+// Abertura de sinistro: statusAtual não é informado pelo cliente, é sempre gravado como INICIAL
+const sinistroCreateSchema = exigeSeguroCompleto(sinistroCampos)
+
+// Atualização: permite avançar o status entre as fases do enum StatusSinistro
+const sinistroUpdateSchema = exigeSeguroCompleto(
+  sinistroCampos.extend({
+    statusAtual: z.enum(statusSinistroValues, { message: "Status inválido" }),
+  })
+)
 
 router.get("/", async (req, res) => {
   /*
@@ -41,7 +64,7 @@ router.post("/", async (req, res) => {
   /*
   #swagger.tags = ["Sinistros"];
   #swagger.summary = "Cadastra um sinistro";
-  #swagger.description = "Realiza o cadastro de um novo sinistro. Se o tipo de atendimento for SEGURO, é obrigatório informar a cia de seguro e a corretora.";
+  #swagger.description = "Realiza o cadastro de um novo sinistro. O status é sempre gravado como INICIAL na abertura. Se o tipo de atendimento for SEGURO, é obrigatório informar a cia de seguro e a corretora.";
   #swagger.parameters['body'] = {
     in: 'body',
     required: true,
@@ -51,28 +74,28 @@ router.post("/", async (req, res) => {
       ciaSeguroId: 1,
       corretoraId: 1,
       numApolice: '123456',
-      kmAtendimento: 15000,
-      statusAtual: 'Em andamento'
+      kmAtendimento: 15000
     }
   };
   #swagger.responses[201] = {
-    description: "Sinistro cadastrado com sucesso."
+    description: "Sinistro cadastrado com sucesso, com status INICIAL."
   };
   #swagger.responses[400] = {
     description: "Dados inválidos."
   };
   */
-  const valida = sinistroSchema.safeParse(req.body)
+  const valida = sinistroCreateSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
     return
   }
 
-  const { veiculoId, tipoAtendimento, ciaSeguroId, corretoraId, numApolice, kmAtendimento, statusAtual } = valida.data
+  const { veiculoId, tipoAtendimento, ciaSeguroId, corretoraId, numApolice, kmAtendimento } = valida.data
 
   try {
     const sinistro = await prisma.sinistro.create({
-      data: { veiculoId, tipoAtendimento, ciaSeguroId, corretoraId, numApolice, kmAtendimento, statusAtual }
+      // status sempre inicia como INICIAL na abertura do sinistro — não vem do cliente
+      data: { veiculoId, tipoAtendimento, ciaSeguroId, corretoraId, numApolice, kmAtendimento, statusAtual: "INICIAL" }
     })
     res.status(201).json(sinistro)
   } catch (error) {
@@ -80,7 +103,7 @@ router.post("/", async (req, res) => {
   }
 })
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRole("ADMIN"), async (req, res) => {
   /*
   #swagger.tags = ["Sinistros"];
   #swagger.summary = "Remove um sinistro";
@@ -121,7 +144,7 @@ router.put("/:id", async (req, res) => {
       corretoraId: 1,
       numApolice: '123456',
       kmAtendimento: 15000,
-      statusAtual: 'Em andamento'
+      statusAtual: 'AGUARDANDO_AUTORIZACAO'
     }
   };
   #swagger.responses[200] = {
@@ -133,7 +156,7 @@ router.put("/:id", async (req, res) => {
   */
   const { id } = req.params
 
-  const valida = sinistroSchema.safeParse(req.body)
+  const valida = sinistroUpdateSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
     return

@@ -9,6 +9,15 @@ const usuarioSchema = z.object({
   nome: z.string().min(3, { message: "Nome deve possuir, no mínimo, 3 caracteres" }),
   email: z.email({ message: "Email inválido" }),
   senha: z.string(),
+  role: z.enum(["ADMIN", "GERENTE", "FUNCIONARIO"]).default("FUNCIONARIO"),
+})
+
+// Na edição a senha é opcional: string vazia/ausente = mantém a senha atual.
+const usuarioUpdateSchema = z.object({
+  nome: z.string().min(3, { message: "Nome deve possuir, no mínimo, 3 caracteres" }),
+  email: z.email({ message: "Email inválido" }),
+  senha: z.string().optional(),
+  role: z.enum(["ADMIN", "GERENTE", "FUNCIONARIO"]),
 })
 
 function validaSenha(senha: string) {
@@ -50,7 +59,8 @@ router.get("/", async (req, res) => {
   */
   try {
     const usuarios = await prisma.usuario.findMany({
-      select: { id: true, nome: true, email: true }
+      select: { id: true, nome: true, email: true, role: true },
+      orderBy: { nome: "asc" },
     })
     res.status(200).json(usuarios)
   } catch (error) {
@@ -85,7 +95,7 @@ router.post("/", async (req, res) => {
     return
   }
 
-  const { nome, email, senha } = valida.data
+  const { nome, email, senha, role } = valida.data
 
   const jaExiste = await prisma.usuario.findUnique({ where: { email } })
   if (jaExiste) {
@@ -104,8 +114,8 @@ router.post("/", async (req, res) => {
 
   try {
     const usuario = await prisma.usuario.create({
-      data: { nome, email, senha: hash },
-      select: { id: true, nome: true, email: true }
+      data: { nome, email, senha: hash, role },
+      select: { id: true, nome: true, email: true, role: true }
     })
     res.status(201).json(usuario)
   } catch (error) {
@@ -131,7 +141,7 @@ router.put("/:id", async (req, res) => {
     schema: {
       nome: 'Elinton Souza',
       email: 'elinton@email.com',
-      senha: 'Senha@123'
+      senha: 'Senha@123 (opcional — deixe de fora para manter a senha atual)'
     }
   };
   #swagger.responses[200] = {
@@ -143,28 +153,50 @@ router.put("/:id", async (req, res) => {
   */
   const { id } = req.params
 
-  const valida = usuarioSchema.safeParse(req.body)
+  const valida = usuarioUpdateSchema.safeParse(req.body)
   if (!valida.success) {
     res.status(400).json({ erro: valida.error })
     return
   }
 
-  const { nome, email, senha } = valida.data
+  const { nome, email, senha, role } = valida.data
 
-  const errosSenha = validaSenha(senha)
-  if (errosSenha.length > 0) {
-    res.status(400).json({ erro: errosSenha.join("; ") })
+  // Impede que o próprio admin remova seu acesso de administrador por engano
+  // (ficaria sem ninguém com permissão para reverter a mudança).
+  if (req.usuarioLogado?.usuarioLogadoId === Number(id) && role !== "ADMIN") {
+    res.status(400).json({ erro: "Você não pode remover seu próprio acesso de administrador." })
     return
   }
 
-  const salt = bcrypt.genSaltSync(12)
-  const hash = bcrypt.hashSync(senha, salt)
+  const emailEmUso = await prisma.usuario.findFirst({
+    where: { email, NOT: { id: Number(id) } },
+  })
+  if (emailEmUso) {
+    res.status(400).json({ erro: "E-mail já cadastrado para outro usuário." })
+    return
+  }
+
+  const data: { nome: string; email: string; role: "ADMIN" | "GERENTE" | "FUNCIONARIO"; senha?: string } = {
+    nome,
+    email,
+    role,
+  }
+
+  if (senha && senha.trim() !== "") {
+    const errosSenha = validaSenha(senha)
+    if (errosSenha.length > 0) {
+      res.status(400).json({ erro: errosSenha.join("; ") })
+      return
+    }
+    const salt = bcrypt.genSaltSync(12)
+    data.senha = bcrypt.hashSync(senha, salt)
+  }
 
   try {
     const usuario = await prisma.usuario.update({
       where: { id: Number(id) },
-      data: { nome, email, senha: hash },
-      select: { id: true, nome: true, email: true }
+      data,
+      select: { id: true, nome: true, email: true, role: true }
     })
     res.status(200).json(usuario)
   } catch (error) {
@@ -185,10 +217,16 @@ router.delete("/:id", async (req, res) => {
   };
   */
   const { id } = req.params
+
+  if (req.usuarioLogado?.usuarioLogadoId === Number(id)) {
+    res.status(400).json({ erro: "Você não pode remover seu próprio usuário." })
+    return
+  }
+
   try {
     const usuario = await prisma.usuario.delete({
       where: { id: Number(id) },
-      select: { id: true, nome: true, email: true }
+      select: { id: true, nome: true, email: true, role: true }
     })
     res.status(200).json(usuario)
   } catch (error) {

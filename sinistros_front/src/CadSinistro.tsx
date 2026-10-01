@@ -1,10 +1,14 @@
+import { apiFetch } from "./api";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+// statusAtual não é mais informado no cadastro: o backend sempre grava o
+// sinistro como INICIAL na abertura (StatusSinistro.INICIAL) e o status
+// avança depois, tela a tela, na Atualização do sinistro.
 const sinistroSchema = z
   .object({
     veiculoId: z.coerce.number().int({ message: "Selecione o veículo" }),
@@ -17,7 +21,6 @@ const sinistroSchema = z
     kmAtendimento: z.coerce
       .number()
       .int({ message: "Informe o km no momento do atendimento" }),
-    statusAtual: z.string().min(2, { message: "Informe o status atual" }),
   })
   .refine(
     (data) => {
@@ -43,11 +46,18 @@ interface OpcaoProps {
   marca?: string;
 }
 
+interface WizardState {
+  veiculoId?: number;
+  veiculoPlaca?: string;
+}
+
 function CadSinistro() {
   const [veiculos, setVeiculos] = useState<OpcaoProps[]>([]);
   const [cias, setCias] = useState<OpcaoProps[]>([]);
   const [corretoras, setCorretoras] = useState<OpcaoProps[]>([]);
   const navigate = useNavigate();
+  const location = useLocation();
+  const wizard = (location.state ?? {}) as WizardState;
 
   const {
     register,
@@ -56,15 +66,16 @@ function CadSinistro() {
     formState: { errors },
   } = useForm<SinistroFormInput, any, SinistroFormOutput>({
     resolver: zodResolver(sinistroSchema),
+    defaultValues: wizard.veiculoId ? { veiculoId: wizard.veiculoId as any } : undefined,
   });
   const tipoAtendimento = watch("tipoAtendimento");
 
   useEffect(() => {
     async function buscaDados() {
       const [respVeiculos, respCias, respCorretoras] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL}/veiculos`),
-        fetch(`${import.meta.env.VITE_API_URL}/cia-seguro`),
-        fetch(`${import.meta.env.VITE_API_URL}/corretora`),
+        apiFetch(`/veiculos`),
+        apiFetch(`/cia-seguro`),
+        apiFetch(`/corretora`),
       ]);
       setVeiculos(await respVeiculos.json());
       setCias(await respCias.json());
@@ -74,14 +85,14 @@ function CadSinistro() {
   }, []);
 
   async function onSubmit(data: SinistroFormOutput) {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/sinistro`, {
+    const response = await apiFetch(`/sinistro`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
 
     if (response.status === 201) {
-      toast.success("Sinistro cadastrado com sucesso!");
+      toast.success("Sinistro cadastrado com sucesso! Status inicial: INICIAL.");
       navigate("/sinistros");
     } else {
       const erro = await response.json();
@@ -93,6 +104,13 @@ function CadSinistro() {
   return (
     <div className="p-6 max-w-md">
       <h1 className="text-2xl font-bold mb-4">Novo Sinistro</h1>
+
+      {wizard.veiculoPlaca && (
+        <div className="mb-4 bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded px-3 py-2">
+          Veículo pré-selecionado: <strong>{wizard.veiculoPlaca}</strong>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-3 bg-white p-6 rounded shadow"
@@ -180,17 +198,9 @@ function CadSinistro() {
           </span>
         )}
 
-        <label className="text-sm font-medium">Status Atual</label>
-        <input
-          {...register("statusAtual")}
-          className="border rounded px-3 py-2"
-          placeholder="Ex: Aberto"
-        />
-        {errors.statusAtual && (
-          <span className="text-red-600 text-sm">
-            {errors.statusAtual.message}
-          </span>
-        )}
+        <p className="text-xs text-gray-500">
+          O status inicial do sinistro é definido automaticamente como <strong>INICIAL</strong>.
+        </p>
 
         <button
           type="submit"

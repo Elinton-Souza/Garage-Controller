@@ -6,9 +6,6 @@ info:
 http:
   method: GET
   url: http://localhost:3000/dashboard/resumo
-  body:
-    type: json
-    data: ""
   auth: inherit
 
 settings:

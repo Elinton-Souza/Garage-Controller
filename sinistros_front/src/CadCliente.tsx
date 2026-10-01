@@ -1,7 +1,9 @@
+import { apiFetch } from "./api";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { toast } from "sonner"
 
 const clienteSchema = z.object({
@@ -13,22 +15,93 @@ const clienteSchema = z.object({
 
 type ClienteForm = z.infer<typeof clienteSchema>
 
+interface ClienteExistente {
+  id: number
+  nome: string
+  docIdentificacao: string
+  email: string | null
+  telefone: string | null
+}
+
 function CadCliente() {
-  const { register, handleSubmit, formState: { errors } } = useForm<ClienteForm>({
+  const { id } = useParams()
+  const modoEdicao = !!id
+  const location = useLocation()
+  const clienteNoState = (location.state as { cliente?: ClienteExistente } | null)?.cliente
+  const [carregando, setCarregando] = useState(modoEdicao && !clienteNoState)
+
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<ClienteForm>({
     resolver: zodResolver(clienteSchema),
   })
   const navigate = useNavigate()
 
+  useEffect(() => {
+    if (!modoEdicao) return
+
+    function preenche(cliente: ClienteExistente) {
+      reset({
+        nome: cliente.nome,
+        docIdentificacao: cliente.docIdentificacao,
+        email: cliente.email ?? "",
+        telefone: cliente.telefone ?? "",
+      })
+    }
+
+    if (clienteNoState) {
+      preenche(clienteNoState)
+      return
+    }
+
+    // Acesso direto à URL de edição (sem vir pela lista de clientes): busca
+    // os dados pelo id antes de exibir o formulário.
+    async function buscaCliente() {
+      const response = await apiFetch(`/clientes`)
+      const clientes: ClienteExistente[] = await response.json()
+      const encontrado = clientes.find((c) => c.id === Number(id))
+      if (encontrado) {
+        preenche(encontrado)
+      } else {
+        toast.error("Cliente não encontrado")
+        navigate("/clientes")
+      }
+      setCarregando(false)
+    }
+    buscaCliente()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modoEdicao, id])
+
   async function onSubmit(data: ClienteForm) {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/clientes`, {
+    if (modoEdicao) {
+      const response = await apiFetch(`/clientes/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+
+      if (response.status === 200) {
+        toast.success("Cliente atualizado com sucesso!")
+        navigate("/clientes")
+      } else {
+        const erro = await response.json().catch(() => null)
+        toast.error(erro?.erro ? String(erro.erro) : "Erro ao atualizar cliente")
+      }
+      return
+    }
+
+    const response = await apiFetch(`/clientes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
 
     if (response.status === 201) {
-      toast.success("Cliente cadastrado com sucesso!")
-      navigate("/clientes")
+      const cliente = await response.json()
+      toast.success("Cliente cadastrado com sucesso! Agora cadastre o veículo dele.")
+      // Fluxo guiado: após salvar o cliente, segue direto para o cadastro
+      // do veículo, já com o cliente pré-selecionado.
+      navigate("/veiculos/novo", {
+        state: { clienteId: cliente.id, clienteNome: cliente.nome },
+      })
     } else {
       const erro = await response.json()
       toast.error("Erro ao cadastrar cliente")
@@ -36,9 +109,17 @@ function CadCliente() {
     }
   }
 
+  if (carregando) {
+    return (
+      <div className="p-6">
+        <p className="text-sm text-gray-500">Carregando...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="p-6 max-w-md">
-      <h1 className="text-2xl font-bold mb-4">Novo Cliente</h1>
+      <h1 className="text-2xl font-bold mb-4">{modoEdicao ? "Editar Cliente" : "Novo Cliente"}</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3 bg-white p-6 rounded shadow">
         <label className="text-sm font-medium">Nome</label>
         <input {...register("nome")} className="border rounded px-3 py-2" />
@@ -56,7 +137,7 @@ function CadCliente() {
         <input {...register("telefone")} className="border rounded px-3 py-2" />
 
         <button type="submit" className="bg-blue-600 text-white rounded py-2 mt-3 hover:bg-blue-700">
-          Salvar
+          {modoEdicao ? "Salvar alterações" : "Salvar e cadastrar veículo"}
         </button>
       </form>
     </div>

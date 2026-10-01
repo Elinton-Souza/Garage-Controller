@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma"
+import { requireRole } from "../middlewares/auth"
 import { Router } from 'express'
 import { z } from 'zod'
 
@@ -6,8 +7,8 @@ const router = Router()
 
 const ciaSeguroSchema = z.object({
   nome: z.string().min(2, { message: "Nome deve possuir, no mínimo, 2 caracteres" }),
-  telefone: z.string().optional(),
-  contatoResponsavel: z.string().optional(),
+  telefone: z.string().min(1, { message: "Informe o telefone" }),
+  contatoResponsavel: z.string().min(1, { message: "Informe o contato responsável" }),
 })
 
 router.get("/", async (req, res) => {
@@ -62,7 +63,7 @@ router.post("/", async (req, res) => {
   }
 })
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRole("ADMIN"), async (req, res) => {
   /*
   #swagger.tags = ["Cias de Seguro"];
   #swagger.summary = "Remove uma cia de seguro";

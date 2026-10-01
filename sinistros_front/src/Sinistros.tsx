@@ -1,3 +1,4 @@
+import { apiFetch } from "./api";
 import { useEffect, useState } from "react";
 import { useUsuarioStore } from "./context/UsuarioContext";
 import { Link } from "react-router-dom";
@@ -21,7 +22,7 @@ function Sinistros() {
 
   useEffect(() => {
     async function buscaDados() {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/sinistro`);
+      const response = await apiFetch(`/sinistro`);
       const dados = await response.json();
       setSinistros(dados);
     }

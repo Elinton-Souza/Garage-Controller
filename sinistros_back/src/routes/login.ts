@@ -22,11 +22,13 @@ router.post("/", async (req, res) => {
     description: "Login realizado com sucesso, retorna o token."
   };
   #swagger.responses[400] = {
+    description: "Requisição inválida (faltou email ou senha)."
+  };
+  #swagger.responses[401] = {
     description: "Login ou senha incorretos."
   };
   */
   const { email, senha } = req.body
-
   const mensagemPadrao = "Login ou senha incorretos"
 
   if (!email || !senha) {
@@ -35,32 +37,47 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    const usuario = await prisma.usuario.findFirst({ where: { email } })
+    const usuario = await prisma.usuario.findUnique({ where: { email } })
 
-    if (usuario == null) {
-      res.status(400).json({ erro: mensagemPadrao })
+    if (!usuario) {
+      res.status(401).json({ erro: mensagemPadrao })
       return
     }
 
-    if (bcrypt.compareSync(senha, usuario.senha)) {
-      const token = jwt.sign(
-        { usuarioLogadoId: usuario.id, usuarioLogadoNome: usuario.nome },
-        process.env.JWT_KEY as string,
-        { expiresIn: "1h" }
-      )
+    const senhaCorreta = await bcrypt.compare(senha, usuario.senha)
 
-      res.status(200).json({
-        id: usuario.id,
-        nome: usuario.nome,
-        email: usuario.email,
-        token
-      })
-    } else {
-      res.status(400).json({ erro: mensagemPadrao })
+    if (!senhaCorreta) {
+      res.status(401).json({ erro: mensagemPadrao })
+      return
     }
+
+    const jwtSecret = process.env.JWT_KEY
+    if (!jwtSecret) {
+      console.error("JWT_KEY não definida.")
+      res.status(500).json({ erro: "Erro interno de configuração." })
+      return
+    }
+
+    const token = jwt.sign(
+      {
+        usuarioLogadoId: usuario.id,
+        usuarioLogadoNome: usuario.nome,
+        usuarioLogadoRole: usuario.role,
+      },
+      jwtSecret,
+      { expiresIn: "1h" }
+    )
+
+    res.status(200).json({
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      role: usuario.role,
+      token,
+    })
   } catch (error) {
-    console.error(error)
-    res.status(400).json({ erro: mensagemPadrao })
+    console.error("Erro no login:", error)
+    res.status(500).json({ erro: "Erro ao processar login." })
   }
 })
 

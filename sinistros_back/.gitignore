@@ -3,3 +3,9 @@ node_modules
 .env
 
 /generated/prisma
+
+# Fotos e orçamentos reais de demonstração (dados do usuário, não devem ir pro repositório)
+uploads/
+
+# Artefato de build do tsc -b
+tsconfig.tsbuildinfo
