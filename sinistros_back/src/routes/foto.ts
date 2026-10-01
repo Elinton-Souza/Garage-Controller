@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma"
+import { requireRole } from "../middlewares/auth"
 import { Router } from 'express'
 import { z } from 'zod'
 
@@ -7,7 +8,7 @@ const router = Router()
 const fotoSchema = z.object({
   sinistroId: z.number().int({ message: "Informe o sinistro" }),
   orcamentoId: z.number().int().optional(),
-  momento: z.string().min(2, { message: "Informe o momento (ex: antes, durante, depois)" }),
+  momento: z.enum(["INICIAL", "ACOMPANHAMENTO", "FINAL"], { message: "Informe o momento (INICIAL, ACOMPANHAMENTO ou FINAL)" }),
   caminhoArquivo: z.string().min(2, { message: "Informe o caminho do arquivo" }),
 })
 
@@ -37,7 +38,7 @@ router.post("/", async (req, res) => {
     schema: {
       sinistroId: 1,
       orcamentoId: 1,
-      momento: 'antes',
+      momento: 'INICIAL',
       caminhoArquivo: '/uploads/foto1.jpg'
     }
   };
@@ -84,7 +85,7 @@ router.put("/:id", async (req, res) => {
     schema: {
       sinistroId: 1,
       orcamentoId: 1,
-      momento: 'antes',
+      momento: 'ACOMPANHAMENTO',
       caminhoArquivo: '/uploads/foto1.jpg'
     }
   };
@@ -117,7 +118,7 @@ router.put("/:id", async (req, res) => {
   }
 })
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRole("ADMIN"), async (req, res) => {
   /*
   #swagger.tags = ["Fotos"];
   #swagger.summary = "Remove uma foto";

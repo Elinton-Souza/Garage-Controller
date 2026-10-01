@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma"
+import { requireRole } from "../middlewares/auth"
 import { Router } from 'express'
 import { z } from 'zod'
 
@@ -52,6 +53,14 @@ router.post("/", async (req, res) => {
 
   const { corretoraId, ciaId } = valida.data
 
+  const jaExiste = await prisma.corretoraCia.findUnique({
+    where: { corretoraId_ciaId: { corretoraId, ciaId } },
+  })
+  if (jaExiste) {
+    res.status(400).json({ erro: "Esta corretora já está vinculada a esta cia de seguro." })
+    return
+  }
+
   try {
     const vinculo = await prisma.corretoraCia.create({
       data: { corretoraId, ciaId }
@@ -62,7 +71,7 @@ router.post("/", async (req, res) => {
   }
 })
 
-router.delete("/:corretoraId/:ciaId", async (req, res) => {
+router.delete("/:corretoraId/:ciaId", requireRole("ADMIN"), async (req, res) => {
   /*
   #swagger.tags = ["Corretora x Cia"];
   #swagger.summary = "Remove um vínculo entre corretora e cia de seguro";
@@ -78,8 +87,28 @@ router.delete("/:corretoraId/:ciaId", async (req, res) => {
     description: 'ID da cia de seguro',
     schema: { type: 'integer' }
   };
+  #swagger.responses[400] = {
+    description: "Existem sinistros registrados com esta combinação de corretora e cia de seguro."
+  };
   */
   const { corretoraId, ciaId } = req.params
+
+  // Só é permitido remover o vínculo se nenhum sinistro estiver usando essa
+  // mesma combinação de corretora + cia de seguro.
+  const sinistroVinculado = await prisma.sinistro.findFirst({
+    where: {
+      corretoraId: Number(corretoraId),
+      ciaSeguroId: Number(ciaId),
+    },
+  })
+
+  if (sinistroVinculado) {
+    res.status(400).json({
+      erro: "Não é possível remover este vínculo: existem sinistros registrados com esta combinação de corretora e cia de seguro.",
+    })
+    return
+  }
+
   try {
     const vinculo = await prisma.corretoraCia.delete({
       where: {

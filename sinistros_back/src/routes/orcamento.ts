@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma"
+import { requireRole } from "../middlewares/auth"
 import { Router } from 'express'
 import { z } from 'zod'
 
@@ -120,7 +121,7 @@ router.put("/:id", async (req, res) => {
   }
 })
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRole("ADMIN"), async (req, res) => {
   /*
   #swagger.tags = ["Orçamentos"];
   #swagger.summary = "Remove um orçamento";

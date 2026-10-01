@@ -9,11 +9,19 @@ datasource db {
 
 // =========== Cadastro Base  =========== //
 
+enum Role {
+  ADMIN
+  GERENTE
+  FUNCIONARIO
+}
+
+
 model Usuario {
   id                  Int                 @id @default(autoincrement())
   nome                String
   email               String              @unique
   senha               String              @db.VarChar(60)
+  role                Role                @default(FUNCIONARIO)
 }
 
 
@@ -42,8 +50,8 @@ model Veiculo {
 model CiaSeguro {
   id                  Int                 @id @default(autoincrement())
   nome                String
-  telefone            String?
-  contatoResponsavel  String?
+  telefone            String
+  contatoResponsavel  String
   sinistros           Sinistro[]
   corretoras          CorretoraCia[]
 }
@@ -52,8 +60,8 @@ model CiaSeguro {
 model Corretora {
   id                  Int                 @id @default(autoincrement())
   nome                String
-  corretorResponsavel String?
-  email               String?
+  corretorResponsavel String
+  email               String
   sinistros           Sinistro[]
   cias                CorretoraCia[]
 }
@@ -77,6 +85,16 @@ enum TipoAtendimento {
 }
 
 
+enum StatusSinistro {
+  INICIAL
+  AGUARDANDO_AUTORIZACAO
+  AUTORIZADO_COMPRA_PECAS
+  EM_SERVICO
+  FINALIZADO
+  ENTREGUE
+}
+
+
 model Sinistro {
   id                   Int                  @id @default(autoincrement())
   veiculoId            Int
@@ -90,7 +108,7 @@ model Sinistro {
   kmAtendimento        Int
   dataAbertura         DateTime             @default(now())
   dataEncerramento     DateTime?
-  statusAtual          String
+  statusAtual          StatusSinistro       @default(INICIAL)
 
   historico            HistoricoSinistro[]
   orcamento            Orcamento[]
@@ -136,9 +154,11 @@ model ItemOrcamento {
   id                    Int                  @id @default(autoincrement())
   orcamentoId           Int
   orcamento             Orcamento            @relation(fields: [orcamentoId], references: [id])
+  codigoPeca            String
   descricao             String
   valor                 Decimal
-  dataPedido            DateTime             @default(now())
+  dataPedido            DateTime?
+  dataFaturamento       DateTime?
   dataPrevistaChegada   DateTime?
   dataChegadaReal       DateTime?
 
@@ -149,13 +169,20 @@ model ItemOrcamento {
 }
 
 
+enum MomentoFoto {
+  INICIAL
+  ACOMPANHAMENTO
+  FINAL
+}
+
+
 model Foto {
   id                    Int                  @id @default(autoincrement())
   sinistroId            Int
   sinistro              Sinistro             @relation(fields:[sinistroId], references: [id])
   orcamentoId           Int?
   orcamento             Orcamento?           @relation(fields: [orcamentoId], references: [id])
-  momento               String
+  momento               MomentoFoto
   caminhoArquivo        String
   dataCaptura           DateTime             @default(now())
 }

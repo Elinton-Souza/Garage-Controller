@@ -1,5 +1,7 @@
+import { apiFetch } from "./api";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface ClienteProps {
   id: number;
@@ -11,15 +13,35 @@ interface ClienteProps {
 
 function Clientes() {
   const [clientes, setClientes] = useState<ClienteProps[]>([]);
+  const navigate = useNavigate();
+
+  async function buscaDados() {
+    const response = await apiFetch(`/clientes`);
+    const dados = await response.json();
+    setClientes(dados);
+  }
 
   useEffect(() => {
-    async function buscaDados() {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/clientes`);
-      const dados = await response.json();
-      setClientes(dados);
-    }
     buscaDados();
   }, []);
+
+  function editar(cliente: ClienteProps) {
+    navigate(`/clientes/${cliente.id}/editar`, { state: { cliente } });
+  }
+
+  async function remover(cliente: ClienteProps) {
+    if (!confirm(`Remover o cliente "${cliente.nome}"? Essa ação não pode ser desfeita.`)) {
+      return;
+    }
+    const response = await apiFetch(`/clientes/${cliente.id}`, { method: "DELETE" });
+    if (response.status === 200) {
+      toast.success("Cliente removido.");
+      buscaDados();
+    } else {
+      const erro = await response.json().catch(() => null);
+      toast.error(erro?.erro ? String(erro.erro) : "Erro ao remover cliente");
+    }
+  }
 
   return (
     <div className="p-6">
@@ -41,6 +63,7 @@ function Clientes() {
             <th className="p-3 border-b">Documento</th>
             <th className="p-3 border-b">Email</th>
             <th className="p-3 border-b">Telefone</th>
+            <th className="p-3 border-b"></th>
           </tr>
         </thead>
         <tbody>
@@ -51,6 +74,20 @@ function Clientes() {
               <td className="p-3 border-b">{cliente.docIdentificacao}</td>
               <td className="p-3 border-b">{cliente.email}</td>
               <td className="p-3 border-b">{cliente.telefone}</td>
+              <td className="p-3 border-b text-right whitespace-nowrap">
+                <button
+                  onClick={() => editar(cliente)}
+                  className="text-xs text-indigo-700 border border-indigo-200 rounded px-2 py-1 hover:bg-indigo-50 mr-2"
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => remover(cliente)}
+                  className="text-xs text-red-600 border border-red-200 rounded px-2 py-1 hover:bg-red-50"
+                >
+                  Remover
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

@@ -1,4 +1,5 @@
 import { prisma } from "../../lib/prisma";
+import { requireRole } from "../middlewares/auth"
 import { Router } from "express";
 import { z } from "zod";
 
@@ -32,6 +33,63 @@ router.get("/", async (req, res) => {
     res.status(200).json(veiculos);
   } catch (error) {
     res.status(500).json({ erro: error });
+  }
+});
+
+router.get("/historico/:placa", async (req, res) => {
+  /*
+#swagger.tags = ["Veículos"];
+#swagger.summary = "Histórico completo de um veículo pela placa";
+#swagger.description = "Retorna o veículo, o cliente dono, todos os sinistros (com histórico de status, orçamentos, itens de peça ordenados pelo código e fotos).";
+#swagger.parameters['placa'] = {
+  in: 'path',
+  required: true,
+  description: 'Placa do veículo (formato antigo ou Mercosul)',
+  schema: { type: 'string' }
+};
+#swagger.responses[200] = {
+  description: "Histórico do veículo encontrado."
+};
+#swagger.responses[404] = {
+  description: "Veículo não encontrado para essa placa."
+};
+*/
+  const { placa } = req.params;
+  try {
+    const veiculo = await prisma.veiculo.findUnique({
+      where: { placa: placa.toUpperCase() },
+      include: {
+        cliente: true,
+        sinistros: {
+          orderBy: { dataAbertura: "asc" },
+          include: {
+            ciaSeguro: true,
+            corretora: true,
+            historico: { orderBy: { dataHora: "asc" } },
+            foto: { orderBy: { dataCaptura: "asc" } },
+            orcamento: {
+              orderBy: { dataCriacao: "asc" },
+              include: {
+                itens: { orderBy: { codigoPeca: "asc" } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!veiculo) {
+      res.status(404).json({ erro: "Veículo não encontrado para essa placa" });
+      return;
+    }
+
+    res.status(200).json(veiculo);
+  } catch (error) {
+    console.error("Erro ao buscar histórico do veículo:", error);
+    res.status(500).json({
+      erro: "Erro ao buscar histórico do veículo",
+      detalhe: error instanceof Error ? error.message : String(error),
+    });
   }
 });
 
@@ -76,7 +134,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRole("ADMIN"), async (req, res) => {
   /*
 #swagger.tags = ["Veículos"];
 #swagger.summary = "Remove um veículo";

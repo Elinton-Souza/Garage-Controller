@@ -1,5 +1,6 @@
 import { consultarPeca } from "../services/consultaIA";
 import { prisma } from "../../lib/prisma";
+import { requireRole } from "../middlewares/auth"
 import { Router } from "express";
 import { z } from "zod";
 
@@ -7,8 +8,13 @@ const router = Router();
 
 const itemSchema = z.object({
   orcamentoId: z.number().int({ message: "Informe o orçamento" }),
+  codigoPeca: z.string().min(1, { message: "Informe o código da peça" }),
   descricao: z.string().min(2, { message: "Informe a descrição" }),
   valor: z.number({ message: "Informe o valor" }),
+  dataPedido: z.coerce.date().optional(),
+  dataFaturamento: z.coerce.date().optional(),
+  dataPrevistaChegada: z.coerce.date().optional(),
+  dataChegadaReal: z.coerce.date().optional(),
 });
 
 router.get("/", async (req, res) => {
@@ -36,6 +42,7 @@ router.post("/", async (req, res) => {
     required: true,
     schema: {
       orcamentoId: 1,
+      codigoPeca: 'PC-4521',
       descricao: 'Para-choque dianteiro',
       valor: 350.00
     }
@@ -53,11 +60,11 @@ router.post("/", async (req, res) => {
     return;
   }
 
-  const { orcamentoId, descricao, valor } = valida.data;
+  const { orcamentoId, codigoPeca, descricao, valor, dataPedido, dataFaturamento, dataPrevistaChegada, dataChegadaReal } = valida.data;
 
   try {
     let item = await prisma.itemOrcamento.create({
-      data: { orcamentoId, descricao, valor },
+      data: { orcamentoId, codigoPeca, descricao, valor, dataPedido, dataFaturamento, dataPrevistaChegada, dataChegadaReal },
     });
 
     try {
@@ -97,6 +104,59 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post("/:id/consultar-ia", async (req, res) => {
+  /*
+  #swagger.tags = ["Itens de Orçamento"];
+  #swagger.summary = "Consulta o mercado via IA para um item de orçamento existente";
+  #swagger.description = "Reconsulta a IA (locais de compra, faixa de preço e dica técnica) para uma peça já cadastrada, atualizando os dados de IA do item com a data/hora da nova consulta.";
+  #swagger.parameters['id'] = {
+    in: 'path',
+    required: true,
+    description: 'ID do item de orçamento',
+    schema: { type: 'integer' }
+  };
+  #swagger.responses[200] = {
+    description: "Consulta realizada e item atualizado."
+  };
+  #swagger.responses[404] = {
+    description: "Item de orçamento não encontrado."
+  };
+  */
+  const { id } = req.params;
+  try {
+    const item = await prisma.itemOrcamento.findUnique({
+      where: { id: Number(id) },
+      include: { orcamento: { include: { sinistro: { include: { veiculo: true } } } } },
+    });
+
+    if (!item) {
+      res.status(404).json({ erro: "Item de orçamento não encontrado" });
+      return;
+    }
+
+    const veiculo = item.orcamento.sinistro.veiculo;
+    const consulta = await consultarPeca(item.descricao, veiculo.marca, veiculo.modelo, veiculo.ano);
+
+    const atualizado = await prisma.itemOrcamento.update({
+      where: { id: item.id },
+      data: {
+        iaLocaisCompra: consulta.locais,
+        iaFaixaPreco: consulta.faixaPrecoEstimada,
+        iaDica: consulta.dica,
+        iaConsultadoEm: new Date(),
+      },
+    });
+
+    res.status(200).json(atualizado);
+  } catch (error) {
+    console.error("Erro ao consultar IA para o item:", error);
+    res.status(400).json({
+      erro: "Erro ao consultar IA",
+      detalhe: error instanceof Error ? error.message : String(error),
+    });
+  }
+});
+
 router.put("/:id", async (req, res) => {
   /*
   #swagger.tags = ["Itens de Orçamento"];
@@ -113,6 +173,7 @@ router.put("/:id", async (req, res) => {
     required: true,
     schema: {
       orcamentoId: 1,
+      codigoPeca: 'PC-4521',
       descricao: 'Para-choque dianteiro',
       valor: 350.00
     }
@@ -132,12 +193,12 @@ router.put("/:id", async (req, res) => {
     return;
   }
 
-  const { orcamentoId, descricao, valor } = valida.data;
+  const { orcamentoId, codigoPeca, descricao, valor, dataPedido, dataFaturamento, dataPrevistaChegada, dataChegadaReal } = valida.data;
 
   try {
     const item = await prisma.itemOrcamento.update({
       where: { id: Number(id) },
-      data: { orcamentoId, descricao, valor },
+      data: { orcamentoId, codigoPeca, descricao, valor, dataPedido, dataFaturamento, dataPrevistaChegada, dataChegadaReal },
     });
     res.status(200).json(item);
   } catch (error) {
@@ -146,7 +207,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRole("ADMIN"), async (req, res) => {
   /*
   #swagger.tags = ["Itens de Orçamento"];
   #swagger.summary = "Remove um item de orçamento";

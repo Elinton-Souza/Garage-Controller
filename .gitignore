@@ -1,0 +1,11 @@
+# Arquivos de estudo pessoal, não fazem parte do projeto
+DÚVIDAS.MD
+DÚVIDAS2.MD
+Esqueleto final da Idéia do Trabalho 1.heic
+Esqueleto inicial da Idéia do Trabalho 1.heic
+modelo_er_trabalho1_diagrama_1.html
+
+# Fotos e orçamentos reais de clientes (dados pessoais) — as cópias
+# realmente usadas pelo app ficam em sinistros_back/uploads, que também
+# é ignorado. O app não depende desta pasta para funcionar.
+arquivos/
