@@ -20,7 +20,10 @@ import routesLogin from './routes/login'
 import routesDashboard from './routes/dashboard'
 
 const app = express()
-const port = 3000
+// Em produção (Render e serviços parecidos), a porta vem de uma variável de
+// ambiente definida pela própria plataforma — localmente, sem essa variável,
+// continua usando a 3000 de sempre.
+const port = process.env.PORT ? Number(process.env.PORT) : 3000
 
 app.use(express.json())
 app.use(cors())
